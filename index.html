@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MMH Appointment Admin App — Workflow Blueprint</title>
+<style>
+:root{
+  --bg:#eef7fb;
+  --ink:#102033;
+  --muted:#5f7188;
+  --card:#ffffff;
+  --line:#d8e7ef;
+  --blue:#2563eb;
+  --cyan:#06b6d4;
+  --teal:#0d9488;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --violet:#7c3aed;
+  --shadow:0 22px 70px rgba(16,32,51,.12);
+  --soft:0 10px 28px rgba(16,32,51,.08);
+  --radius:28px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(6,182,212,.22), transparent 32%),
+    radial-gradient(circle at 85% 5%, rgba(16,185,129,.20), transparent 28%),
+    linear-gradient(180deg,#f7fdff 0%, var(--bg) 45%, #f9fbff 100%);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(37,99,235,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.055) 1px,transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(to bottom, black, transparent 80%);
+}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 18px 80px;position:relative;z-index:1}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 14px;border:1px solid rgba(216,231,239,.8);border-radius:999px;
+  background:rgba(255,255,255,.72);backdrop-filter:blur(18px);box-shadow:var(--soft);
+  position:sticky;top:12px;z-index:5;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.3px}
+.logo-mark{width:36px;height:36px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--cyan),var(--green));display:grid;place-items:center;color:#fff;font-size:20px;box-shadow:0 10px 22px rgba(37,99,235,.25)}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:13px;font-weight:800;padding:9px 12px;border-radius:999px;transition:.25s}
+.nav-links a:hover{background:#eef8ff;color:var(--blue)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:center;padding:72px 0 48px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--teal);background:#e7fbf7;border:1px solid #bdf0e4;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900;letter-spacing:.9px;text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,76px);line-height:.94;letter-spacing:-3.2px;margin:18px 0 16px}
+.gradient-text{background:linear-gradient(110deg,#0f172a 0%,var(--blue) 45%,var(--teal) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:18px;line-height:1.75;color:var(--muted);margin:0;max-width:680px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.btn{border:0;border-radius:16px;padding:14px 18px;font-weight:950;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:9px;transition:.25s;font-size:14px}
+.btn.primary{color:white;background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 16px 35px rgba(37,99,235,.25)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--soft)}
+.btn:hover{transform:translateY(-2px)}
+.device{
+  border-radius:38px;padding:14px;background:#0b1220;box-shadow:var(--shadow);transform:rotate(1.5deg);position:relative;isolation:isolate;
+}
+.device:before{content:"";position:absolute;inset:-18px;border-radius:48px;background:linear-gradient(135deg,rgba(37,99,235,.25),rgba(16,185,129,.18));filter:blur(18px);z-index:-1}
+.screen{border-radius:28px;background:linear-gradient(180deg,#f9fdff,#eef8fb);padding:18px;min-height:520px;overflow:hidden}
+.phone-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:#64748b;font-size:12px;font-weight:800}
+.status-chip{padding:7px 10px;border-radius:999px;font-size:11px;font-weight:900;display:inline-flex;gap:6px;align-items:center}
+.status-chip.new{background:#fff7ed;color:#9a3412}.status-chip.confirmed{background:#dcfce7;color:#166534}.status-chip.done{background:#dbeafe;color:#1d4ed8}.status-chip.dismissed{background:#fee2e2;color:#991b1b}
+.mock-card{background:#fff;border:1px solid #dbeaf2;border-radius:24px;padding:16px;box-shadow:0 10px 26px rgba(15,23,42,.08);margin-bottom:14px}
+.mock-card h3{margin:0 0 6px;font-size:17px}.mock-card p{font-size:13px;line-height:1.5;margin:4px 0;color:#64748b}.mock-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.mock-mini{border:1px solid #e2eef4;background:#f8fcff;border-radius:16px;padding:12px}.mock-mini b{display:block;font-size:12px}.mock-mini span{font-size:12px;color:#64748b}
+.status-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.sbtn{border:0;border-radius:13px;padding:11px 8px;font-weight:900;font-size:12px;color:#fff;cursor:pointer}.sbtn.new{background:var(--amber)}.sbtn.confirm{background:var(--green)}.sbtn.dismiss{background:var(--red)}.sbtn.done{background:var(--blue)}
+.section{margin:44px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px}.section h2{font-size:clamp(28px,4vw,44px);letter-spacing:-1.5px;margin:0}.section-head p{margin:0;color:var(--muted);line-height:1.6;max-width:520px}
+.flow{display:grid;grid-template-columns:repeat(8,minmax(150px,1fr));gap:14px;overflow-x:auto;padding:8px 2px 18px;scroll-snap-type:x mandatory}.flow-card{min-height:170px;scroll-snap-align:start;background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--soft);position:relative}.flow-card:not(:last-child):after{content:"→";position:absolute;right:-15px;top:50%;transform:translateY(-50%);font-weight:950;color:var(--blue);background:white;border:1px solid var(--line);width:26px;height:26px;display:grid;place-items:center;border-radius:50%;z-index:2}.icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;font-size:22px;color:#fff;margin-bottom:12px;background:linear-gradient(135deg,var(--blue),var(--cyan))}.flow-card:nth-child(2n) .icon{background:linear-gradient(135deg,var(--teal),var(--green))}.flow-card:nth-child(3n) .icon{background:linear-gradient(135deg,var(--violet),var(--blue))}.flow-card b{display:block;margin-bottom:6px}.flow-card span{display:block;color:var(--muted);font-size:13px;line-height:1.45}
+.timeline{position:relative;display:grid;gap:18px}.step{display:grid;grid-template-columns:78px 1fr;gap:18px;align-items:start}.num{width:58px;height:58px;border-radius:22px;background:linear-gradient(135deg,var(--blue),var(--cyan));color:white;font-size:20px;font-weight:950;display:grid;place-items:center;box-shadow:0 14px 30px rgba(37,99,235,.25)}.step-card{background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:26px;padding:20px;box-shadow:var(--soft)}.step-card h3{margin:0 0 8px;font-size:22px}.step-card p{color:var(--muted);line-height:1.7;margin:0}.step-card ul{margin:12px 0 0;padding-left:20px;color:var(--muted);line-height:1.8}.highlight{color:var(--blue);font-weight:900}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--soft)}.feature .ficon{font-size:25px;margin-bottom:10px}.feature b{display:block;margin-bottom:5px}.feature span{color:var(--muted);font-size:13px;line-height:1.5}
+.modal-demo{background:#0f172a;border-radius:28px;padding:18px;box-shadow:var(--shadow)}.modal-card{background:white;border-radius:24px;padding:22px}.modal-card h3{margin:0 0 14px;font-size:22px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:#64748b;font-weight:900;margin-bottom:6px}.field input{width:100%;border:1px solid #dbe5ee;border-radius:14px;padding:13px;font-size:14px}.result-box{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;border-radius:16px;padding:14px;margin-top:14px;font-weight:800;display:none}.mini-actions{display:flex;gap:8px;flex-wrap:wrap}.mini-actions button{border:0;border-radius:13px;padding:11px 13px;font-weight:900;color:white;cursor:pointer}.mini-actions button:first-child{background:#64748b}.mini-actions button:last-child{background:var(--green)}
+.whatsapp-card{background:linear-gradient(135deg,#dcfce7,#ecfeff);border:1px solid #bbf7d0;border-radius:26px;padding:20px;box-shadow:var(--soft)}.wa-msg{background:white;border-radius:18px;padding:14px;margin-top:12px;color:#14532d;border:1px solid #bbf7d0;font-size:14px;line-height:1.6}
+.footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px;padding:28px;border-top:1px solid var(--line)}
+.reveal{animation:rise .7s ease both}@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:880px){.hero,.two-col{grid-template-columns:1fr}.device{transform:none}.feature-grid{grid-template-columns:1fr 1fr}.section-head{display:block}.section-head p{margin-top:8px}.nav{border-radius:24px;align-items:flex-start}.nav-links{display:none}.step{grid-template-columns:54px 1fr}.num{width:46px;height:46px;border-radius:16px;font-size:16px}}
+@media(max-width:560px){.wrap{padding:16px 12px 60px}h1{letter-spacing:-2px}.hero{padding-top:38px}.feature-grid{grid-template-columns:1fr}.mock-grid,.form-row{grid-template-columns:1fr}.flow{grid-template-columns:repeat(8,78vw)}.screen{min-height:auto}.section{margin:34px 0}}
+@media print{.nav,.hero-actions,.status-buttons,.mini-actions{display:none}.wrap{max-width:none}.hero,.two-col{grid-template-columns:1fr}.flow{display:block}.flow-card{margin-bottom:10px;break-inside:avoid}.step-card,.feature,.mock-card{break-inside:avoid;box-shadow:none}.device,.modal-demo{box-shadow:none}.section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <div class="logo"><div class="logo-mark">✚</div><span>MMH Appointment Blueprint</span></div>
+    <div class="nav-links">
+      <a href="#flow">Flow</a><a href="#timeline">Workflow</a><a href="#features">Features</a><a href="#dialog">Confirm Dialog</a>
+    </div>
+  </nav>
+
+  <header class="hero reveal">
+    <div>
+      <span class="eyebrow">Healthcare Admin System</span>
+      <h1><span class="gradient-text">MMH Appointment Admin App</span></h1>
+      <p>A complete web-to-app appointment workflow where patients book online, admins verify by call, collect registration fees through WhatsApp, generate USSID, confirm visits, and notify patients automatically.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#flow">View Workflow →</a>
+        <a class="btn ghost" href="#dialog">See Confirmation Dialog</a>
+      </div>
+    </div>
+
+    <div class="device reveal">
+      <div class="screen">
+        <div class="phone-top"><span>MMH Admin</span><span>09:30 AM</span></div>
+        <div class="mock-card">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:start">
+            <div>
+              <h3>Rahul Sharma</h3>
+              <p>General Medicine · Website booking</p>
+            </div>
+            <span class="status-chip new" id="statusChip">● New</span>
+          </div>
+          <div class="mock-grid">
+            <div class="mock-mini"><b>Phone</b><span>+91 XXXXX XXXXX</span></div>
+            <div class="mock-mini"><b>Booking ID</b><span>WEB-2409</span></div>
+            <div class="mock-mini"><b>Date</b><span id="previewDate">Pending</span></div>
+            <div class="mock-mini"><b>USSID</b><span id="previewUssid">Not generated</span></div>
+          </div>
+          <div class="status-buttons">
+            <button class="sbtn new" onclick="setMockStatus('new')">New</button>
+            <button class="sbtn confirm" onclick="openDialog()">Confirm</button>
+            <button class="sbtn dismiss" onclick="setMockStatus('dismissed')">Dismiss</button>
+            <button class="sbtn done" onclick="setMockStatus('done')">Visit Done</button>
+          </div>
+        </div>
+        <div class="whatsapp-card">
+          <b>WhatsApp Share Preview</b>
+          <div class="wa-msg">Patient Info: Rahul Sharma<br>Department: General Medicine<br>Status: New appointment received.</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section reveal" id="flow">
+    <div class="section-head">
+      <div><span class="eyebrow">Visual Flow</span><h2>One clean path from booking to visit</h2></div>
+      <p>Each card represents a handoff between website, app, admin, receptionist, and patient notification.</p>
+    </div>
+    <div class="flow">
+      <div class="flow-card"><div class="icon">🌐</div><b>Website Booking</b><span>Patient fills appointment form online.</span></div>
+      <div class="flow-card"><div class="icon">🔔</div><b>App Notification</b><span>Admin app receives new appointment details.</span></div>
+      <div class="flow-card"><div class="icon">📋</div><b>Admin Dashboard</b><span>View info, status, and patient contact options.</span></div>
+      <div class="flow-card"><div class="icon">📞</div><b>Call Patient</b><span>Phone app opens with patient number.</span></div>
+      <div class="flow-card"><div class="icon">💬</div><b>WhatsApp Fee</b><span>Registration payment collected/shared via WhatsApp.</span></div>
+      <div class="flow-card"><div class="icon">🎫</div><b>Ticket Creation</b><span>Receptionist creates hospital ticket.</span></div>
+      <div class="flow-card"><div class="icon">🔐</div><b>USSID Generated</b><span>Unique patient code is added to appointment.</span></div>
+      <div class="flow-card"><div class="icon">✅</div><b>Patient Notified</b><span>SMS/WhatsApp/email confirms USSID, date, and time.</span></div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="timeline">
+    <div class="section-head">
+      <div><span class="eyebrow">Workflow Blueprint</span><h2>Detailed appointment workflow</h2></div>
+      <p>Built directly from the handwritten blueprint PDF.</p>
+    </div>
+    <div class="timeline">
+      <div class="step"><div class="num">1</div><div class="step-card"><h3>Patient books appointment</h3><p>Patient books an online appointment through the website. The appointment information is transferred from the <span class="highlight">Website</span> to the <span class="highlight">Admin App</span>.</p></div></div>
+      <div class="step"><div class="num">2</div><div class="step-card"><h3>Admin app receives notification</h3><p>The MMH admin receives a notification about the new appointment. The appointment appears inside the app dashboard.</p></div></div>
+      <div class="step"><div class="num">3</div><div class="step-card"><h3>Appointment dashboard</h3><p>The app shows Appointment Information, Appointment Status, and Patient Contact.</p><ul><li>Status options: New, Confirm, Dismiss, Visit Done</li><li>Admin can inspect each appointment record</li></ul></div></div>
+      <div class="step"><div class="num">4</div><div class="step-card"><h3>Contact patient</h3><p>Admin taps the Patient Contact button. The calling app opens automatically with the patient’s registered phone number.</p></div></div>
+      <div class="step"><div class="num">5</div><div class="step-card"><h3>Fee collection and WhatsApp sharing</h3><p>Admin confirms the appointment during the call and collects the registration fee through WhatsApp/payment link. Patient information can also be shared through WhatsApp.</p></div></div>
+      <div class="step"><div class="num">6</div><div class="step-card"><h3>Receptionist creates ticket</h3><p>The receptionist uses the shared patient information to create a ticket. A unique <span class="highlight">USSID code</span> is generated for the patient.</p></div></div>
+      <div class="step"><div class="num">7</div><div class="step-card"><h3>Confirm appointment</h3><p>When Confirm is clicked, a dialog asks for USSID, date of visit, and time of visit. After fill-up, the appointment becomes confirmed.</p></div></div>
+      <div class="step"><div class="num">8</div><div class="step-card"><h3>Patient receives notification</h3><p>The registered phone number and email receive a confirmation message with USSID, date, and time of visit.</p></div></div>
+    </div>
+  </section>
+
+  <section class="section two-col reveal" id="dialog">
+    <div class="modal-demo">
+      <div class="modal-card">
+        <h3>Confirm Appointment</h3>
+        <div class="field"><label>USSID Code</label><input id="ussidInput" placeholder="e.g. MMH-2026-0047"></div>
+        <div class="form-row">
+          <div class="field"><label>Date of Visit</label><input id="dateInput" type="date"></div>
+          <div class="field"><label>Time of Visit</label><input id="timeInput" type="time"></div>
+        </div>
+        <div class="mini-actions"><button onclick="closeDialog()">Cancel</button><button onclick="confirmAppointment()">Confirm Appointment</button></div>
+        <div class="result-box" id="resultBox">Appointment confirmed successfully.</div>
+      </div>
+    </div>
+    <div>
+      <span class="eyebrow">Interactive Mockup</span>
+      <h2>Confirmation dialog logic</h2>
+      <p style="color:var(--muted);line-height:1.8">This is the key control point. The appointment should not become confirmed until the admin fills USSID, date of visit, and time of visit. Try filling the form and pressing confirm — the mock status card updates.</p>
+      <div class="whatsapp-card" style="margin-top:16px">
+        <b>Patient Notification Format</b>
+        <div class="wa-msg" id="notifPreview">Your MMH appointment is confirmed. USSID: pending. Visit: pending.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="features">
+    <div class="section-head">
+      <div><span class="eyebrow">App Requirements</span><h2>Core features for MMH Admin App</h2></div>
+      <p>The handwritten notes convert into these software modules.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature"><div class="ficon">🔑</div><b>Login Required</b><span>Predetermined username and passcode for admin access.</span></div>
+      <div class="feature"><div class="ficon">🗂️</div><b>Appointment Records</b><span>Store all online appointments in a searchable list.</span></div>
+      <div class="feature"><div class="ficon">📊</div><b>Status Tracking</b><span>New, Confirmed, Dismissed, and Visit Done states.</span></div>
+      <div class="feature"><div class="ficon">👁️</div><b>View Details</b><span>Each appointment opens with complete patient information.</span></div>
+      <div class="feature"><div class="ficon">📞</div><b>Patient Contact</b><span>One-tap calling using the registered contact number.</span></div>
+      <div class="feature"><div class="ficon">✏️</div><b>Editable Status</b><span>Admins can update status after verification.</span></div>
+      <div class="feature"><div class="ficon">💬</div><b>WhatsApp Sharing</b><span>Share patient info or registration fee message.</span></div>
+      <div class="feature"><div class="ficon">📤</div><b>Export / Share Info</b><span>Send appointment data to receptionist or records.</span></div>
+      <div class="feature"><div class="ficon">🔔</div><b>Patient Notification</b><span>Notify via phone/email/WhatsApp with USSID and visit time.</span></div>
+    </div>
+  </section>
+
+  <footer class="footer">Prepared for MMH Appointment System Planning · Web & App Appointment Workflow Blueprint</footer>
+</div>
+<script>
+function setMockStatus(status){
+  const chip=document.getElementById('statusChip');
+  chip.className='status-chip '+(status==='dismissed'?'dismissed':status==='done'?'done':status==='confirmed'?'confirmed':'new');
+  const label={new:'● New',confirmed:'✓ Confirmed',done:'✓ Visit Done',dismissed:'× Dismissed'}[status];
+  chip.textContent=label;
+}
+function openDialog(){document.getElementById('dialog').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('ussidInput').focus();}
+function closeDialog(){document.getElementById('resultBox').style.display='none';}
+function confirmAppointment(){
+  const u=document.getElementById('ussidInput').value.trim();
+  const d=document.getElementById('dateInput').value;
+  const t=document.getElementById('timeInput').value;
+  if(!u||!d||!t){
+    const box=document.getElementById('resultBox');box.style.display='block';box.style.background='#fff7ed';box.style.borderColor='#fed7aa';box.style.color='#9a3412';box.textContent='Please fill USSID, date, and time before confirming.';return;
+  }
+  setMockStatus('confirmed');
+  document.getElementById('previewUssid').textContent=u;
+  document.getElementById('previewDate').textContent=d+' · '+t;
+  const box=document.getElementById('resultBox');box.style.display='block';box.style.background='#ecfdf5';box.style.borderColor='#bbf7d0';box.style.color='#166534';box.textContent='Appointment confirmed successfully.';
+  document.getElementById('notifPreview').innerHTML='Your MMH appointment is confirmed.<br>USSID: <b>'+u+'</b><br>Visit: <b>'+d+' at '+t+'</b>';
+}
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('reveal')})},{threshold:.08});
+document.querySelectorAll('.section').forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
